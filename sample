@@ -1,0 +1,213 @@
+package com.cg.wallet.services;
+
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import org.springframework.transaction.annotation.Transactional;
+
+
+
+import com.cg.wallet.exceptions.ApplicationException;
+
+import com.cg.wallet.dao.WalletDAO;
+
+import com.cg.wallet.entities.Account;
+
+
+
+
+
+@Service
+
+@Transactional
+
+
+
+public class WalletServiceImpl implements WalletService {
+
+ @Autowired private WalletDAO dao;
+
+
+
+ @Transactional
+
+ public void create(Account ac) {
+
+ // TODO Auto-generated method stub
+
+ System.out.println(ac.getAccNo());
+
+ if(dao.existsById(ac.getAccNo())) {
+
+ throw new ApplicationException("Account Already exists");
+
+ }
+
+ dao.save(ac);
+
+
+
+ }
+
+
+
+
+
+
+
+ @Transactional(readOnly=true)
+
+ public Account findById(Integer id) {
+
+ // TODO Auto-generated method stub
+
+ return dao.findById(id).get();
+
+ }
+
+
+
+
+
+
+
+ @Transactional
+
+ public void transferAccount( double amount,Account a1, Account a2) {
+
+ double bal1=a1.getBalance();
+
+ bal1=bal1-amount;
+
+ a1.setBalance(bal1);
+
+ double bal2=a2.getBalance();
+
+ bal2=bal2+amount;
+
+ a2.setBalance(bal2);
+
+ dao.save(a1);
+
+ dao.save(a2);
+
+ // TODO Auto-generated method stub
+
+ }
+
+
+
+ @Transactional
+
+ public void addMoney(double amount, Account ac) {
+
+ boolean b= false;
+
+ double bal = ac.getBalance();
+
+ bal=bal+amount;
+
+ ac.setBalance(bal);
+
+ dao.save(ac);
+
+ }
+
+
+
+
+
+
+
+ @Override
+
+ public List<Account> findAll() {
+
+ // TODO Auto-generated method stub
+
+ return dao.findAll();
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+ @Override
+
+ public void deletByID(Integer id) {
+
+ // TODO Auto-generated method stub
+
+ dao.deleteById(id);
+
+ }
+
+
+
+
+
+
+
+ @Override
+
+ public void withdraw(Double amount,Account a1)
+
+{
+
+ double bal = a1.getBalance();
+
+ bal=bal - amount;
+
+ a1.setBalance(bal);
+
+ dao.save(a1);
+
+ }
+
+
+
+
+
+
+
+ @Override
+
+ public Account showBal(Integer id)
+
+ {
+
+ return dao.findById(id).get();
+
+ }
+
+
+
+
+
+/*
+
+@Override
+
+public boolean validationMobile(String mobile) {
+
+ System.out.println("verifiying mobile "+mobile.matches(mobilePattern));
+
+ return mobile.matches(mobilePattern);
+
+}
+
+*/
+
+}
